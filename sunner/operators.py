@@ -163,19 +163,20 @@ class SUNNER_OT_animate(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SUNNER_OT_enable_twilight(bpy.types.Operator):
-    bl_idname = "sunner.enable_twilight"
-    bl_label = "Enable twilight balance"
-    bl_description = "Add opt-in native twilight drivers to this managed Sunner cycle"
+class SUNNER_OT_update(bpy.types.Operator):
+    bl_idname = "sunner.update_cycle"
+    bl_label = "Update cycle"
+    bl_description = ("Add this version's controls (twilight balance, season, stars, discs) to an older "
+                      "cycle; keeps saved values and rebuilds the managed sky")
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         try:
-            rig.configure_twilight(context.scene)
+            rig.update(context.scene)
         except rig.RigError as error:
             self.report({"ERROR"}, str(error))
             return {"CANCELLED"}
-        self.report({"INFO"}, "Twilight balance enabled; adjust its gains in Advanced")
+        self.report({"INFO"}, "Cycle updated. Set Stars and Discs to 0 to keep the previous look")
         return {"FINISHED"}
 
 
@@ -205,6 +206,6 @@ CLASSES = (
     SUNNER_OT_select,
     SUNNER_OT_position,
     SUNNER_OT_animate,
-    SUNNER_OT_enable_twilight,
+    SUNNER_OT_update,
     SUNNER_OT_remove,
 )

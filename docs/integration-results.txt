@@ -1,24 +1,25 @@
 test_animation_frame_jumps_and_brightness (__main__.CycleTests.test_animation_frame_jumps_and_brightness) ... ok
 test_animation_replacement_and_shared_action (__main__.CycleTests.test_animation_replacement_and_shared_action) ... ok
 test_creation_failure_rolls_back (__main__.CycleTests.test_creation_failure_rolls_back) ... ok
+test_discs_follow_lights_and_add_no_illumination (__main__.CycleTests.test_discs_follow_lights_and_add_no_illumination) ... 00:00.402  render           | Saved: '/var/folders/_2/ltvh3h0j7d1gy645qnxs56280000gn/T/sunner-render-wokxln0g/probe.exr'
+test_driver_length_rejected_before_assignment (__main__.CycleTests.test_driver_length_rejected_before_assignment) ... ok
 test_horizon_and_wrap_are_continuous (__main__.CycleTests.test_horizon_and_wrap_are_continuous) ... ok
 test_idempotent_add_select_and_rename (__main__.CycleTests.test_idempotent_add_select_and_rename) ... ok
 test_light_fades_and_native_drivers (__main__.CycleTests.test_light_fades_and_native_drivers) ... ok
 test_no_original_world_and_incomplete_rig_removal (__main__.CycleTests.test_no_original_world_and_incomplete_rig_removal) ... ok
+test_opt_in_twilight_gains_are_native_and_idempotent (__main__.CycleTests.test_opt_in_twilight_gains_are_native_and_idempotent) ... ok
 test_removal_preserves_world_and_unrelated_lights (__main__.CycleTests.test_removal_preserves_world_and_unrelated_lights) ... ok
 test_rotation_and_sky_agree (__main__.CycleTests.test_rotation_and_sky_agree) ... ok
 test_saved_rig_evaluates_without_extension (__main__.CycleTests.test_saved_rig_evaluates_without_extension) ... ok
 test_scene_render_settings_remain_untouched (__main__.CycleTests.test_scene_render_settings_remain_untouched) ... ok
 test_shared_reference_blocks_destructive_removal (__main__.CycleTests.test_shared_reference_blocks_destructive_removal) ... ok
+test_stars_appear_at_night_only (__main__.CycleTests.test_stars_appear_at_night_only) ... 00:01.843  render           | Saved: '/var/folders/_2/ltvh3h0j7d1gy645qnxs56280000gn/T/sunner-render-8umy4n6p/probe.exr'
+test_tampere_midsummer_white_night (__main__.CycleTests.test_tampere_midsummer_white_night) ... ok
+test_twilight_operator_preserves_legacy_cycle_when_ownership_is_unsafe (__main__.CycleTests.test_twilight_operator_preserves_legacy_cycle_when_ownership_is_unsafe) ... ok
+test_twilight_rejects_replaced_moon_data (__main__.CycleTests.test_twilight_rejects_replaced_moon_data) ... ok
+test_twilight_rejects_shared_world_and_moon_data (__main__.CycleTests.test_twilight_rejects_shared_world_and_moon_data) ... ok
+test_update_operator_upgrades_an_older_cycle_only_on_request (__main__.CycleTests.test_update_operator_upgrades_an_older_cycle_only_on_request) ... ok
 test_world_changed_by_user_is_not_replaced (__main__.CycleTests.test_world_changed_by_user_is_not_replaced) ... ok
-
-----------------------------------------------------------------------
-Ran 13 tests in 2.298s
-
+Ran 22 tests in 2.015s
 OK
-Info: Cycle ready. Rotate the day dial on its local X axis
-Info: Saved as "cycle.blend"
 SUNNER_INTEGRATION_OK
-Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 01:35:57)
-
-Blender quit

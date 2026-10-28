@@ -15,8 +15,9 @@ OUTPUT = ROOT / "examples" / "ui-smoke.json"
 WEATHER_SCREENSHOT = ROOT / "examples" / "weather-panel-preview.png"
 LEGACY_ADVANCED_SCREENSHOT = ROOT / "examples" / "advanced-legacy-panel-preview.png"
 ENABLED_ADVANCED_SCREENSHOT = ROOT / "examples" / "advanced-enabled-panel-preview.png"
+CYCLE_SCREENSHOT = ROOT / "examples" / "cycle-panel-preview.png"
 OUTPUT.parent.mkdir(exist_ok=True)
-for screenshot in (WEATHER_SCREENSHOT, LEGACY_ADVANCED_SCREENSHOT, ENABLED_ADVANCED_SCREENSHOT):
+for screenshot in (WEATHER_SCREENSHOT, LEGACY_ADVANCED_SCREENSHOT, ENABLED_ADVANCED_SCREENSHOT, CYCLE_SCREENSHOT):
     screenshot.unlink(missing_ok=True)
 OUTPUT.write_text(json.dumps({"ok": False, "status": "running"}))
 state = 0
@@ -93,9 +94,9 @@ def tick():
                 window.event_simulate(type="ESC", value="RELEASE")
             elif state == 10:
                 root = rig.parts(scene)["root"]
-                for name in rig.TWILIGHT_CONTROLS:
+                for name in rig.OPTIONAL_CONTROLS:
                     del root[name]
-                assert not any(name in root for name in rig.TWILIGHT_CONTROLS)
+                assert not any(name in root for name in rig.OPTIONAL_CONTROLS)
                 receipts["advanced_legacy"] = {"twilight_controls_absent": True}
                 bpy.ops.wm.call_panel(name="SUNNER_PT_advanced", keep_open=False)
             elif state == 11:
@@ -104,20 +105,32 @@ def tick():
                 window.event_simulate(type="ESC", value="PRESS")
                 window.event_simulate(type="ESC", value="RELEASE")
             elif state == 12:
-                assert bpy.ops.sunner.enable_twilight() == {"FINISHED"}
+                assert bpy.ops.sunner.update_cycle() == {"FINISHED"}
                 root = rig.parts(scene)["root"]
-                assert root["twilight_enabled"] is True
-                assert root["twilight_sky_gain"] == 3.0
-                assert root["twilight_moon_gain"] == 0.15
+                assert not rig.needs_update(root)
+                assert root["twilight_enabled"] is False
+                root["twilight_enabled"] = True
                 receipts["advanced_enabled"] = {
-                    "twilight_enabled": root["twilight_enabled"],
-                    "twilight_sky_gain": root["twilight_sky_gain"],
-                    "twilight_moon_gain": root["twilight_moon_gain"],
+                    name: root[name] for name in ("twilight_enabled", "twilight_sky_gain", "twilight_moon_gain",
+                                                  "season", "stars", "discs")
                 }
                 bpy.ops.wm.call_panel(name="SUNNER_PT_advanced", keep_open=False)
             elif state == 13:
                 capture(ENABLED_ADVANCED_SCREENSHOT, "advanced_enabled_panel")
                 checks.append("advanced enabled checkbox and gain-controls capture")
+                window.event_simulate(type="ESC", value="PRESS")
+                window.event_simulate(type="ESC", value="RELEASE")
+            elif state == 14:
+                # The real sidebar tab, selected through RNA rather than screen coordinates.
+                sidebar = next(r for r in area.regions if r.type == "UI")
+                sidebar.active_panel_category = "Sunner"
+                area.tag_redraw()
+            elif state == 15:
+                sidebar = next(r for r in area.regions if r.type == "UI")
+                bpy.ops.wm.redraw_timer(type="DRAW_WIN_SWAP", iterations=2)
+            elif state == 16:
+                capture(CYCLE_SCREENSHOT, "cycle_panel")
+                checks.append("updated cycle panel with season, stars and discs")
                 OUTPUT.write_text(json.dumps({"ok": True, "checks": checks, "receipts": receipts}, indent=2))
                 print("SUNNER_UI_OK", checks, flush=True)
                 bpy.ops.wm.quit_blender()

@@ -1,10 +1,11 @@
 # Sunner
 
-A small Blender extension for daylight, twilight, moonlight, and optional scene weather. Rotate one day dial; the lights and sky follow together.
+A small Blender extension for daylight, twilight, seasons, moonlight, stars and optional scene weather. Rotate one day dial; the lights and sky follow together.
 
-**Blender 5.2.x. Cycles and EEVEE.** No external assets, Python dependencies, network access, or background handlers.
+**Blender 5.2.x (tested on 5.2.3 LTS). Cycles and EEVEE.** No external assets, Python dependencies, network access, or background handlers.
 
-- [Installable ZIP](dist/sunner-0.3.0.zip) (build this release candidate before installing)
+- [Installable ZIP](dist/sunner-0.4.0.zip)
+- [Season, star and disc renders](examples/sky/contact-sheet.jpg)
 - [Weather example](examples/sunner-weather.blend) and [weather contact sheet](examples/weather/contact-sheet.jpg)
 - [Example scene](examples/sunner.blend)
 - [Lighting contact sheet](examples/contact-sheet.jpg)
@@ -13,7 +14,7 @@ A small Blender extension for daylight, twilight, moonlight, and optional scene 
 
 ## Install and use
 
-1. In Blender Preferences, open **Get Extensions**, use its menu's **Install from Disk**, and select `dist/sunner-0.3.0.zip`.
+1. In Blender Preferences, open **Get Extensions**, use its menu's **Install from Disk**, and select `dist/sunner-0.4.0.zip`.
 2. Enable Sunner. In the 3D Viewport, press **N** and open the **Sunner** tab.
 3. Choose **Add cycle**. Sunner assigns a new sky and retains your original World for restoration.
 4. Use **Rendered** shading, or Material Preview with **Scene World** and **Scene Lights** enabled.
@@ -36,11 +37,14 @@ The clock is an orientation aid, not local civil time. You can rotate beyond one
 | Control | Effect |
 | --- | --- |
 | Heading | Turns the whole orbit around world Z |
-| Path tilt | Lowers the midday sun; recommended range 0–75° |
+| Path tilt | Lowers the midday sun; set it to your latitude (61.5° for Tampere) |
+| Season | Sun declination: +23.4° midsummer, 0° equinox, −23.4° midwinter |
 | Sun brightness | Direct sunlight multiplier |
 | Sky brightness | Daylight and twilight World contribution |
 | Night brightness | Moonlight and night sky together |
 | Haze | Atmospheric aerosols in the sky, not fog between scene objects |
+| Stars | Procedural star field; appears after civil twilight and turns with the dial |
+| Discs | Visible sun and moon discs; camera rays only, they add no light |
 | Sunset warmth | How strongly low sunlight warms |
 | Moon cool tint | Neutral moonlight at zero, restrained blue tint at one |
 | Shadow softness | Angular size of both lights |
@@ -48,13 +52,25 @@ The clock is an orientation aid, not local civil time. You can rotate beyond one
 | Twilight sky gain | Daylight multiplier at −4° solar elevation when twilight balance is on |
 | Twilight moon gain | Moon and night-sky multiplier at −4° solar elevation when twilight balance is on |
 
+### Seasons, stars and discs
+
+With Path tilt at your latitude, **Season** moves the sun's whole daily path north or south. At Tampere (61.5°) midsummer gives a 52° noon and a white night 5° below the horizon at midnight; midwinter gives a 5° noon. Both lights leave the dial's plane together, so the moon stays opposite the sun (the full-moon approximation). The day dial remains the only time control.
+
+**Stars** sit in the dial's frame, so they wheel around the celestial pole as the night passes, and fade in between −6° and −12° solar elevation. They are a decorative random field, not a real catalogue. Turn Cycles denoising off or down for star shots; the denoiser treats one-pixel stars as noise.
+
+**Discs** draw the sun (tinted by its temperature) and the full moon in the sky, sized by Shadow softness and scaled by each light's own fading energy. They are visible only to camera rays, so the explicit Sun lights stay the sole direct light; this works in both Cycles and EEVEE. Set Discs to 0 to hide them.
+
+### Updating older cycles
+
+Cycles created by earlier versions are not changed when the extension updates. Choose **Update cycle** in the Sunner panel to add season, stars, discs and twilight balance. It keeps saved control values and the day dial, and rebuilds only Sunner's own World nodes. New controls start neutral (season 0) except stars and discs, which start at 1; set them to 0 to keep the old look. Scripts can call `sunner.rig.update(scene)`.
+
 ### Optional twilight balance
 
-New 0.3 cycles include native twilight drivers but leave **Twilight balance** off. Enable it in **Sunner → Advanced** to lift daylight sky contribution and restrain moon/night contribution around dawn and dusk. Its gain controls are evaluated from the existing day dial, heading, and path tilt; it adds no time property, callback, or scene migration.
+Cycles include native twilight drivers but leave **Twilight balance** off. Enable it in **Sunner → Advanced** to lift daylight sky contribution and restrain moon/night contribution around dawn and dusk. Its gain controls are evaluated from the existing day dial, heading, and path tilt; it adds no time property, callback, or scene migration.
 
 At noon and midnight the twilight window has zero gain, so enabling it preserves the existing baseline at those phases. Uncheck **Twilight balance** to return to that baseline at every angle; the gain values remain available for later adjustment.
 
-Cycles created by 0.2 and earlier are not changed when the extension updates. Open **Advanced** and choose **Enable twilight balance** to add the managed native drivers with the default gains, then adjust or disable them normally. The same opt-in is available to scripts as `sunner.rig.configure_twilight(scene, sky_gain=3.0, moon_gain=0.15)`. It validates that the managed World and moon data are still exclusively owned before changing them; shared or replaced data is rejected rather than modified.
+Scripts can enable it with `sunner.rig.configure_twilight(scene, sky_gain=3.0, moon_gain=0.15)`, which also runs `update()` on older cycles. Both validate that the managed World and light data are still exclusively owned before changing them; shared or replaced data is rejected rather than modified.
 
 Defaults are calibrated under **AgX, Look None, exposure 0**. Sunner does not alter exposure, view transform, render engine, cameras, compositor, or other lights. Large exposure offsets will change the intended appearance.
 
@@ -102,9 +118,9 @@ Disabling the extension removes its UI, not scene content. Renaming generated ob
 ## Deliberate limits
 
 - One rig per scene. Sharing a rig across scenes is not an independent second cycle.
-- The moon stays opposite the sun, a full-moon approximation.
-- No visible sun/moon discs, lunar phases, or stars. Weather is optional and artist-controlled, not meteorological simulation.
-- No latitude/date/season calculation, automatic exposure, or light-probe baking.
+- The moon stays opposite the sun, a full-moon approximation. No lunar phases or moon surface texture.
+- Stars are a random field, not real constellations. Weather is optional and artist-controlled, not meteorological simulation.
+- Latitude (Path tilt) and season are artist controls. There is no date/time-zone/location solver, automatic exposure, or light-probe baking.
 - EEVEE and Cycles differ in indirect lighting and contact shadows. Sunner does not alter scene-specific probes or ray-tracing settings to conceal those differences.
 - The sky uses the native model down to -18° solar elevation, then holds that value while its daylight contribution reaches zero. A simple gradient supplies the night sky.
 - Blender 5.2 is the tested API. The manifest excludes 5.3 and later until they are verified.
@@ -153,7 +169,7 @@ On this workstation, verified Sunner releases are also installed and enabled in 
 
 ```bash
 blender --background --factory-startup --threads 1 --python-exit-code 1 \
-  --python tools/install_local.py -- --zip dist/sunner-0.3.0.zip
+  --python tools/install_local.py -- --zip dist/sunner-0.4.0.zip
 ```
 
 The installer reads existing preferences explicitly, backs them up locally, installs through Blender's extension operator, checks installed files against the ZIP, and saves enablement. Backups and `sunner-install.json` stay under Blender's local configuration directory, not in this repository. It does not open startup/saved scenes or upgrade the Blender application. Restart an already-open Blender to load updated code. Test the ZIP in an isolated profile before running this against normal preferences.
@@ -175,6 +191,11 @@ blender --background --factory-startup --python-exit-code 1 --python tests/rende
 blender --background --factory-startup --python-exit-code 1 --python tests/render_samples.py -- --engine BLENDER_EEVEE
 python3 tests/contact_sheet.py     # Developer-only Pillow dependency.
 
+# Season, star and disc renders, plus a contact sheet built with Blender only.
+blender --background --factory-startup --python-exit-code 1 --python tests/render_sky.py -- --engine CYCLES
+blender --background --factory-startup --python-exit-code 1 --python tests/render_sky.py -- --engine BLENDER_EEVEE
+blender --background --factory-startup --python-exit-code 1 --python tests/sky_sheet.py
+
 # Small weather comparison, serial processes only. Script stops if macOS memory pressure rises.
 blender --background --factory-startup --threads 2 --python-exit-code 1 --python tests/render_weather.py -- --engine CYCLES --save
 blender --background --factory-startup --threads 2 --python-exit-code 1 --python tests/render_weather.py -- --engine BLENDER_EEVEE
@@ -182,7 +203,7 @@ python3 tests/contact_sheet.py --weather
 
 mkdir -p dist
 (cd sunner && blender --command extension validate && blender --command extension build --output-dir ../dist)
-blender --command extension validate dist/sunner-0.3.0.zip
+blender --command extension validate dist/sunner-0.4.0.zip
 
 # Use an isolated profile so the installation test does not modify yours.
 profile=$(mktemp -d /tmp/sunner-install.XXXXXX)
@@ -191,4 +212,4 @@ BLENDER_USER_RESOURCES="$profile" blender --background --factory-startup --pytho
 
 The foreground UI test uses explicit undo checkpoints around operators invoked from Python. After the undo checks, it captures the registered panel as a popup in `examples/weather-panel-preview.png`. This avoids screen-coordinate-dependent tab selection. Test scripts create disposable scenes; never run them inside a scene you want to retain.
 
-License: [GPL-3.0-or-later](sunner/LICENSE). Local ZIP delivery only; no marketplace publication has been performed.
+License: [GPL-3.0-or-later](sunner/LICENSE). Source: <https://github.com/jheaminoff/blender_sunner>. Not published on the Blender Extensions platform.

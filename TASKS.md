@@ -105,11 +105,10 @@ Done when the ZIP installs cleanly and a new scene can complete the basic workfl
 
 ## Deferred until the core is accepted
 
-- Visible sun/moon discs and moon surface texture.
-- Optional stars that fade with daylight.
+- Moon surface texture.
 - Distance fog, clouds, and simple rain moved into the explicitly approved 0.2 scope below.
 - Independent lunar orbit or phase.
-- Geographic/time/date controls.
+- Date/time-zone/location solver (latitude and season are now artist controls).
 - Automatic exposure and light-probe baking.
 - Older Blender compatibility.
 - Custom orbit gizmo, preset browser, or multiple rigs per scene.
@@ -130,3 +129,11 @@ If visible celestial bodies are required in version one, move that item into sco
 - [x] Install and enable the verified release in the normal Blender profile, without modifying scenes or upgrading Blender itself.
 
 Future verified Sunner updates must also update the normal local add-on installation, as explicitly requested by the Captain.
+
+## 9. Approved 0.4 sky extension
+
+- [x] Season (declination) control; Path tilt doubles as latitude. One dial remains the only time state.
+- [x] Procedural stars fixed to the dial's frame, fading in after civil twilight.
+- [x] Camera-only sun and moon discs that add no illumination, in both engines.
+- [x] `rig.update()` / Update cycle for older rigs, preserving saved values.
+- [x] Git repository, published publicly on GitHub at the Captain's request.

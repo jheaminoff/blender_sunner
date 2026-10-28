@@ -43,10 +43,18 @@ class SUNNER_PT_cycle(bpy.types.Panel):
         layout.prop(root, "rotation_euler", index=1, text="Path tilt")
         if not 0 <= root.rotation_euler.y <= math.radians(75):
             layout.label(text="Recommended tilt: 0–75°", icon="INFO")
+        if rig.needs_update(root):
+            layout.operator("sunner.update_cycle", icon="FILE_REFRESH")
+            layout.label(text="Adds season, stars, discs and twilight.", icon="INFO")
+        else:
+            layout.prop(root, '["season"]', text="Season")
+            layout.label(text="Tilt = latitude. ±23.4° = solstices.")
         layout.separator()
         for prop, label in (("sun_brightness", "Sun brightness"), ("sky_brightness", "Sky brightness"),
-                            ("night_brightness", "Night brightness"), ("haze", "Haze")):
-            layout.prop(root, f'["{prop}"]', text=label)
+                            ("night_brightness", "Night brightness"), ("haze", "Haze"),
+                            ("stars", "Stars"), ("discs", "Discs")):
+            if prop in root:
+                layout.prop(root, f'["{prop}"]', text=label)
         layout.separator()
         layout.operator("sunner.animate", icon="TIME")
         layout.operator("sunner.remove", icon="TRASH")
@@ -54,7 +62,9 @@ class SUNNER_PT_cycle(bpy.types.Panel):
             layout.label(text="Another World is active; only lights follow.", icon="INFO")
         if abs(context.scene.view_settings.exposure) > 3:
             layout.label(text="Existing exposure may obscure the cycle.", icon="INFO")
-        shading = context.space_data.shading
+        shading = getattr(context.space_data, "shading", None)  # None in popups.
+        if shading is None:
+            return
         if shading.type == "SOLID" or shading.type == "WIREFRAME":
             layout.label(text="Use Rendered shading to see the cycle.", icon="INFO")
         elif shading.type == "MATERIAL" and not (shading.use_scene_world and shading.use_scene_lights):
@@ -90,8 +100,8 @@ class SUNNER_PT_advanced(bpy.types.Panel):
             layout.prop(root, '["twilight_sky_gain"]', text="Twilight sky gain")
             layout.prop(root, '["twilight_moon_gain"]', text="Twilight moon gain")
         else:
-            layout.operator("sunner.enable_twilight", icon="LIGHT")
-            layout.label(text="Older cycles stay unchanged until enabled.", icon="INFO")
+            layout.operator("sunner.update_cycle", icon="FILE_REFRESH")
+            layout.label(text="Older cycles stay unchanged until updated.", icon="INFO")
         layout.label(text="Night brightness is an artistic lift.")
         layout.label(text="Haze colours the sky; it is not scene fog.")
 

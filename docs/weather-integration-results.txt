@@ -10,13 +10,6 @@ test_original_release_rig_accepts_optional_weather (__main__.WeatherTests.test_o
 test_rain_is_bounded_and_frame_deterministic (__main__.WeatherTests.test_rain_is_bounded_and_frame_deterministic) ... ok
 test_safe_weather_and_full_rig_removal (__main__.WeatherTests.test_safe_weather_and_full_rig_removal) ... ok
 test_saved_weather_without_addon (__main__.WeatherTests.test_saved_weather_without_addon) ... ok
-
-----------------------------------------------------------------------
-Ran 12 tests in 2.430s
-
+Ran 12 tests in 0.803s
 OK
-Info: Saved as "weather.blend"
 SUNNER_WEATHER_INTEGRATION_OK
-Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 01:35:57)
-
-Blender quit

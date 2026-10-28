@@ -223,6 +223,7 @@ class WeatherTests(unittest.TestCase):
             old_rig.create(self.scene)
             rig.configure_twilight(self.scene)
             self.assertTrue(rig.parts(self.scene)["root"]["twilight_enabled"])
+            self.assertFalse(rig.needs_update(rig.parts(self.scene)["root"]))
             weather.create(self.scene)
             self.scene.frame_set(10)
             rig.remove(self.scene)

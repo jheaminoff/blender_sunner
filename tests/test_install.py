@@ -16,7 +16,7 @@ assert bpy.ops.preferences.extension_repo_add(
 ) == {"FINISHED"}
 repo = bpy.context.preferences.extensions.repos[-1]
 assert bpy.ops.extensions.package_install_files(
-    filepath=str(ROOT / "dist" / "sunner-0.3.0.zip"), repo=repo.module, enable_on_install=True,
+    filepath=str(ROOT / "dist" / "sunner-0.4.0.zip"), repo=repo.module, enable_on_install=True,
 ) == {"FINISHED"}
 module = f"bl_ext.{repo.module}.sunner"
 assert module in bpy.context.preferences.addons
@@ -28,8 +28,9 @@ p = rig.parts(scene)
 p["dial"].rotation_euler.x = math.pi
 bpy.context.view_layer.update()
 assert p["sun"].data.energy > 1
-assert bpy.ops.sunner.enable_twilight() == {"FINISHED"}
-assert p["root"]["twilight_enabled"]
+assert bpy.ops.sunner.update_cycle() == {"FINISHED"}
+assert not rig.needs_update(p["root"])
+p["root"]["season"] = rig.SOLSTICE
 assert bpy.ops.sunner.weather_add() == {"FINISHED"}
 assert bpy.ops.sunner.weather_preset(preset="RAINY") == {"FINISHED"}
 scene.frame_set(12)

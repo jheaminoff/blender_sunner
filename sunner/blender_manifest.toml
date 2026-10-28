@@ -1,8 +1,8 @@
 schema_version = "1.0.0"
 id = "sunner"
-version = "0.3.0"
+version = "0.4.0"
 name = "Sunner"
-tagline = "Control daylight, moonlight and lightweight scene weather"
+tagline = "Daylight, seasons, moonlight, stars and lightweight weather"
 maintainer = "Sunner contributors"
 type = "add-on"
 tags = ["Lighting", "Animation"]

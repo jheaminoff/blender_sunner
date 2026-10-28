@@ -38,17 +38,20 @@ class CycleTests(unittest.TestCase):
         bpy.context.view_layer.update()
 
     def test_rotation_and_sky_agree(self):
-        for heading in (0, 1.7):
+        for heading, season in ((0, 0), (1.7, 0), (0.4, rig.SOLSTICE), (2.5, -rig.SOLSTICE)):
+            self.p["root"]["season"] = season
+            self.p["root"].update_tag()
             for tilt in (0, math.radians(30), math.radians(75)):
                 self.p["root"].rotation_euler.y = tilt
                 self.p["root"].rotation_euler.z = heading
                 for angle in (0, 90, 180, 240, 270, 360, 720):
-                    with self.subTest(heading=heading, tilt=tilt, angle=angle):
+                    with self.subTest(heading=heading, season=season, tilt=tilt, angle=angle):
                         self.phase(angle)
                         sun = self.p["sun"].matrix_world.to_quaternion() @ Vector((0, 0, 1))
                         moon = self.p["moon"].matrix_world.to_quaternion() @ Vector((0, 0, 1))
                         self.assertLess((sun + moon).length, 1e-5)
-                        expected_z = -math.cos(tilt) * math.cos(math.radians(angle))
+                        expected_z = (math.sin(season) * math.sin(tilt) -
+                                      math.cos(season) * math.cos(tilt) * math.cos(math.radians(angle)))
                         self.assertAlmostEqual(sun.z, expected_z, places=5)
                         if sun.z >= math.sin(math.radians(-18)):
                             sky = self.p["world"].node_tree.nodes["Sunner atmosphere"]
@@ -157,16 +160,95 @@ class CycleTests(unittest.TestCase):
             names = [variable.name for variable in curve.driver.variables]
             self.assertEqual(len(names), len(set(names)))
 
-    def test_twilight_operator_upgrades_an_older_cycle_only_on_request(self):
+    def test_update_operator_upgrades_an_older_cycle_only_on_request(self):
         root = self.p["root"]
-        for name in rig.TWILIGHT_CONTROLS:
+        for name in rig.OPTIONAL_CONTROLS:
             del root[name]
-        self.assertNotIn("twilight_enabled", root)
-        self.assertEqual(bpy.ops.sunner.enable_twilight(), {"FINISHED"})
-        self.assertTrue(root["twilight_enabled"])
-        self.assertEqual(root["twilight_sky_gain"], 3.0)
-        self.assertEqual(root["twilight_moon_gain"], 0.15)
-        self.assertEqual(bpy.ops.sunner.enable_twilight(), {"FINISHED"})
+        root["night_brightness"] = 2.5
+        self.assertTrue(rig.needs_update(root))
+        self.assertEqual(bpy.ops.sunner.update_cycle(), {"FINISHED"})
+        self.assertFalse(rig.needs_update(root))
+        self.assertFalse(root["twilight_enabled"])
+        self.assertEqual((root["twilight_sky_gain"], root["twilight_moon_gain"]), (3.0, 0.15))
+        self.assertEqual((root["season"], root["stars"], root["discs"]), (0.0, 1.0, 1.0))
+        self.assertEqual(root["night_brightness"], 2.5)
+        self.assertEqual(bpy.ops.sunner.update_cycle(), {"FINISHED"})
+
+    def test_tampere_midsummer_white_night(self):
+        root = self.p["root"]
+        root.rotation_euler.y = math.radians(61.5)
+        root["season"] = rig.SOLSTICE
+        root.update_tag()
+        for angle, elevation in ((180, 90 - 61.5 + 23.44), (0, 61.5 + 23.44 - 90)):
+            self.phase(angle)
+            sun = self.p["sun"].matrix_world.to_quaternion() @ Vector((0, 0, 1))
+            self.assertAlmostEqual(math.degrees(math.asin(sun.z)), elevation, places=3)
+        # Five degrees below the horizon at midnight: no direct sun, a bright twilight sky.
+        self.assertEqual(self.p["sun"].data.energy, 0)
+        self.assertGreater(self.p["world"].node_tree.nodes["Sunner daylight"].inputs["Strength"].default_value, 0.01)
+
+    def render(self, engine, direction, lens=50, **controls):
+        """Render a tiny linear EXR towards a world direction; return its RGB pixels."""
+        scene = self.scene
+        for name, value in controls.items():
+            self.p["root"][name] = value
+        self.p["root"].update_tag()
+        camera = scene.camera
+        if camera is None:
+            camera = bpy.data.objects.new("Probe camera", bpy.data.cameras.new("Probe camera"))
+            scene.collection.objects.link(camera)
+            scene.camera = camera
+        camera.data.lens = lens
+        camera.rotation_euler = Vector(direction).to_track_quat("-Z", "Y").to_euler()
+        scene.render.engine = engine
+        scene.render.resolution_x = scene.render.resolution_y = 32
+        scene.render.resolution_percentage = 100
+        scene.cycles.samples = 16
+        scene.cycles.use_denoising = False
+        scene.eevee.taa_render_samples = 4
+        scene.render.image_settings.file_format = "OPEN_EXR"
+        with tempfile.TemporaryDirectory(prefix="sunner-render-") as temp:
+            scene.render.filepath = str(Path(temp) / "probe.exr")
+            bpy.ops.render.render(write_still=True)
+            image = bpy.data.images.load(scene.render.filepath)
+            pixels = list(image.pixels)
+            bpy.data.images.remove(image)
+        return [pixels[i:i + 3] for i in range(0, len(pixels), 4)]
+
+    def test_discs_follow_lights_and_add_no_illumination(self):
+        root = self.p["root"]
+        root.rotation_euler.y = math.radians(50)
+        self.phase(200)
+        ground = bpy.data.objects.new("Ground", bpy.data.meshes.new("Ground"))
+        ground.data.from_pydata([(-50, -50, 0), (50, -50, 0), (50, 50, 0), (-50, 50, 0)], [], [(0, 1, 2, 3)])
+        ground.location.z = -5
+        self.scene.collection.objects.link(ground)
+        sun = self.p["sun"].matrix_world.to_quaternion() @ Vector((0, 0, 1))
+        for engine in ("CYCLES", "BLENDER_EEVEE"):
+            with self.subTest(engine=engine):
+                centre = 16 * 32 + 16
+                lit = self.render(engine, sun, lens=400, discs=1.0)[centre]
+                plain = self.render(engine, sun, lens=400, discs=0.0)[centre]
+                self.assertGreater(sum(lit), 10 * sum(plain), (lit, plain))
+                floor = [sum(map(sum, self.render(engine, (0, 0, -1), discs=value))) for value in (0.0, 10.0)]
+                self.assertAlmostEqual(floor[1] / floor[0], 1.0, delta=0.02)
+        # The moon disc is exactly opposite and visible only at night.
+        self.phase(20)
+        moon = -(self.p["sun"].matrix_world.to_quaternion() @ Vector((0, 0, 1)))
+        self.assertGreater(moon.z, 0)
+        centre = self.render("CYCLES", moon, lens=400, discs=1.0)[16 * 32 + 16]
+        self.assertGreater(sum(centre), 1.0)
+
+    def test_stars_appear_at_night_only(self):
+        self.p["root"].rotation_euler.y = math.radians(61.5)
+        for angle, visible in ((0, True), (180, False)):
+            self.phase(angle)
+            peaks = [max(map(sum, self.render("CYCLES", (0, 0.3, 1), lens=20, stars=value)))
+                     for value in (0.0, 1.0)]
+            if visible:
+                self.assertGreater(peaks[1], 2 * peaks[0], peaks)
+            else:
+                self.assertAlmostEqual(peaks[1], peaks[0], delta=0.02 * peaks[0])
 
     def test_twilight_rejects_shared_world_and_moon_data(self):
         root = self.p["root"]
@@ -283,12 +365,12 @@ class CycleTests(unittest.TestCase):
 
     def test_twilight_operator_preserves_legacy_cycle_when_ownership_is_unsafe(self):
         root = self.p["root"]
-        for name in rig.TWILIGHT_CONTROLS:
+        for name in rig.OPTIONAL_CONTROLS:
             del root[name]
         other_scene = bpy.data.scenes.new("Twilight World User")
         other_scene.world = self.p["world"]
         with self.assertRaisesRegex(RuntimeError, "Sunner sky is used outside this rig"):
-            bpy.ops.sunner.enable_twilight()
+            bpy.ops.sunner.update_cycle()
         self.assertNotIn("twilight_enabled", root)
 
     def test_twilight_rejects_replaced_moon_data(self):

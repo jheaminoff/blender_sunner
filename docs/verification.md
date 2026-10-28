@@ -1,5 +1,21 @@
 # Sunner verification
 
+## 0.4 seasons, stars and discs
+
+Verified on Blender **5.2.3 LTS**, macOS arm64, 2026-10-28.
+
+- **34 integration tests passed:** 22 cycle tests and 12 weather tests. New checks: sun direction against the closed-form declination formula across heading/tilt/season, the Tampere midsummer white night (52° noon, −5° midnight, no direct sun, lit sky), sun/moon discs visible in tiny Cycles and EEVEE renders while a ground plane's illumination stays within 2% with discs at 0 or 10, stars at night only, and the Update cycle path on a rig stripped of all optional controls (saved values kept).
+- The saved-file test still evaluates every driver with Python auto-run disabled and no extension. All driver expressions remain simple expressions under 255 bytes.
+- A 0.1 ZIP rig accepts `configure_twilight` (which now runs `update`) and weather.
+- Foreground UI: undo/redo checks as before, plus a capture of the real Sunner sidebar tab after Update cycle ([cycle panel](../examples/cycle-panel-preview.png)).
+- [Season, star and disc contact sheet](../examples/sky/contact-sheet.jpg): top row Cycles (64 samples, no denoising), bottom row EEVEE; equinox sunset disc, midwinter and midsummer noon at 61.5°, midsummer white night, moonrise with stars, midwinter star field.
+- `dist/sunner-0.4.0.zip` validated; isolated-profile install ran add/update/season/weather/remove and disable/re-enable.
+- Defect found during the work: the first star and disc shader used `Texture Coordinate > Normal`, which in World shaders points away from the view direction, so neither appeared in renders. Switched to `Generated`; the render tests above guard it.
+
+## 0.3 twilight balance
+
+Built 2026-09-16 and covered by the cycle suite (opt-in gains, idempotence, shared/replaced data rejection, legacy upgrade) and foreground Advanced-panel captures. Its release checks were completed together with 0.4.
+
 ## 0.2 weather
 
 Verified on Blender **5.2.1 LTS**, macOS arm64, 2026-09-14.

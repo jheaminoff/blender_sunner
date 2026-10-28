@@ -8,28 +8,36 @@
     "disable and re-enable",
     "registered weather panel capture",
     "advanced legacy enable-action capture",
-    "advanced enabled checkbox and gain-controls capture"
+    "advanced enabled checkbox and gain-controls capture",
+    "updated cycle panel with season, stars and discs"
   ],
   "receipts": {
     "weather_panel": {
       "screenshot": "weather-panel-preview.png",
-      "bytes": 904894
+      "bytes": 738855
     },
     "advanced_legacy": {
       "twilight_controls_absent": true
     },
     "advanced_legacy_panel": {
       "screenshot": "advanced-legacy-panel-preview.png",
-      "bytes": 868740
+      "bytes": 708748
     },
     "advanced_enabled": {
       "twilight_enabled": true,
       "twilight_sky_gain": 3.0,
-      "twilight_moon_gain": 0.15
+      "twilight_moon_gain": 0.15,
+      "season": 0.0,
+      "stars": 1.0,
+      "discs": 1.0
     },
     "advanced_enabled_panel": {
       "screenshot": "advanced-enabled-panel-preview.png",
-      "bytes": 879952
+      "bytes": 718762
+    },
+    "cycle_panel": {
+      "screenshot": "cycle-panel-preview.png",
+      "bytes": 725549
     }
   }
 }
