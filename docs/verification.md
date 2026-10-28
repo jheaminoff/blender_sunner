@@ -10,6 +10,7 @@ Verified on Blender **5.2.3 LTS**, macOS arm64, 2026-10-28.
 - Foreground UI: undo/redo checks as before, plus a capture of the real Sunner sidebar tab after Update cycle ([cycle panel](../examples/cycle-panel-preview.png)).
 - [Season, star and disc contact sheet](../examples/sky/contact-sheet.jpg): top row Cycles (64 samples, no denoising), bottom row EEVEE; equinox sunset disc, midwinter and midsummer noon at 61.5°, midsummer white night, moonrise with stars, midwinter star field.
 - `dist/sunner-0.4.0.zip` validated; isolated-profile install ran add/update/season/weather/remove and disable/re-enable.
+- Normal local installation updated to 0.4.0 with `tools/install_local.py` after the same installer passed in an isolated profile; a normal-profile background start registered `bl_ext.sunner_local.sunner`. Preferences were backed up first; no scene was opened or saved. Restart any running Blender to load it.
 - Defect found during the work: the first star and disc shader used `Texture Coordinate > Normal`, which in World shaders points away from the view direction, so neither appeared in renders. Switched to `Generated`; the render tests above guard it.
 
 ## 0.3 twilight balance
