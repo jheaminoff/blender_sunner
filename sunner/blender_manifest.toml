@@ -1,0 +1,14 @@
+schema_version = "1.0.0"
+id = "sunner"
+version = "0.3.0"
+name = "Sunner"
+tagline = "Control daylight, moonlight and lightweight scene weather"
+maintainer = "Sunner contributors"
+type = "add-on"
+tags = ["Lighting", "Animation"]
+blender_version_min = "5.2.0"
+blender_version_max = "5.3.0"
+license = ["SPDX:GPL-3.0-or-later"]
+
+[build]
+paths_exclude_pattern = ["__pycache__/", "*.pyc", "*.zip"]

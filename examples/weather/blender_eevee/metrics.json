@@ -1,0 +1,42 @@
+[
+  {
+    "label": "00-no-weather",
+    "seconds": 1.162,
+    "peak_rss_bytes": 372785152
+  },
+  {
+    "label": "01-clear",
+    "seconds": 0.891,
+    "peak_rss_bytes": 381321216
+  },
+  {
+    "label": "02-misty",
+    "seconds": 7.987,
+    "peak_rss_bytes": 402341888
+  },
+  {
+    "label": "03-cloudy",
+    "seconds": 6.082,
+    "peak_rss_bytes": 403570688
+  },
+  {
+    "label": "04-overcast",
+    "seconds": 6.161,
+    "peak_rss_bytes": 403668992
+  },
+  {
+    "label": "05-rainy",
+    "seconds": 8.712,
+    "peak_rss_bytes": 409157632
+  },
+  {
+    "label": "06-shafts",
+    "seconds": 6.229,
+    "peak_rss_bytes": 409272320
+  },
+  {
+    "label": "07-rainy-night",
+    "seconds": 9.562,
+    "peak_rss_bytes": 409272320
+  }
+]

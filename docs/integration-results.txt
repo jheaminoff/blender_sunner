@@ -1,0 +1,24 @@
+test_animation_frame_jumps_and_brightness (__main__.CycleTests.test_animation_frame_jumps_and_brightness) ... ok
+test_animation_replacement_and_shared_action (__main__.CycleTests.test_animation_replacement_and_shared_action) ... ok
+test_creation_failure_rolls_back (__main__.CycleTests.test_creation_failure_rolls_back) ... ok
+test_horizon_and_wrap_are_continuous (__main__.CycleTests.test_horizon_and_wrap_are_continuous) ... ok
+test_idempotent_add_select_and_rename (__main__.CycleTests.test_idempotent_add_select_and_rename) ... ok
+test_light_fades_and_native_drivers (__main__.CycleTests.test_light_fades_and_native_drivers) ... ok
+test_no_original_world_and_incomplete_rig_removal (__main__.CycleTests.test_no_original_world_and_incomplete_rig_removal) ... ok
+test_removal_preserves_world_and_unrelated_lights (__main__.CycleTests.test_removal_preserves_world_and_unrelated_lights) ... ok
+test_rotation_and_sky_agree (__main__.CycleTests.test_rotation_and_sky_agree) ... ok
+test_saved_rig_evaluates_without_extension (__main__.CycleTests.test_saved_rig_evaluates_without_extension) ... ok
+test_scene_render_settings_remain_untouched (__main__.CycleTests.test_scene_render_settings_remain_untouched) ... ok
+test_shared_reference_blocks_destructive_removal (__main__.CycleTests.test_shared_reference_blocks_destructive_removal) ... ok
+test_world_changed_by_user_is_not_replaced (__main__.CycleTests.test_world_changed_by_user_is_not_replaced) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 2.298s
+
+OK
+Info: Cycle ready. Rotate the day dial on its local X axis
+Info: Saved as "cycle.blend"
+SUNNER_INTEGRATION_OK
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 01:35:57)
+
+Blender quit

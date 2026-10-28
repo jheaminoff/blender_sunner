@@ -1,0 +1,22 @@
+test_animated_presets_and_wind (__main__.WeatherTests.test_animated_presets_and_wind) ... ok
+test_camera_rebind_and_native_drivers (__main__.WeatherTests.test_camera_rebind_and_native_drivers) ... ok
+test_clear_and_lighting_independence (__main__.WeatherTests.test_clear_and_lighting_independence) ... ok
+test_creation_failure_rolls_back_weather_only (__main__.WeatherTests.test_creation_failure_rolls_back_weather_only) ... ok
+test_deleted_constraint_rebinds_and_deleted_camera_disables_rain (__main__.WeatherTests.test_deleted_constraint_rebinds_and_deleted_camera_disables_rain) ... ok
+test_external_users_block_both_removals_atomically (__main__.WeatherTests.test_external_users_block_both_removals_atomically) ... ok
+test_invalid_weather_pointer_cannot_delete_user_data (__main__.WeatherTests.test_invalid_weather_pointer_cannot_delete_user_data) ... ok
+test_metres_and_region_origin (__main__.WeatherTests.test_metres_and_region_origin) ... ok
+test_original_release_rig_accepts_optional_weather (__main__.WeatherTests.test_original_release_rig_accepts_optional_weather) ... ok
+test_rain_is_bounded_and_frame_deterministic (__main__.WeatherTests.test_rain_is_bounded_and_frame_deterministic) ... ok
+test_safe_weather_and_full_rig_removal (__main__.WeatherTests.test_safe_weather_and_full_rig_removal) ... ok
+test_saved_weather_without_addon (__main__.WeatherTests.test_saved_weather_without_addon) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 2.430s
+
+OK
+Info: Saved as "weather.blend"
+SUNNER_WEATHER_INTEGRATION_OK
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 01:35:57)
+
+Blender quit

@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "checks": [
+    "add and select",
+    "add cycle and weather undo/redo",
+    "weather removal undo",
+    "whole rig removal undo",
+    "disable and re-enable",
+    "registered weather panel capture",
+    "advanced legacy enable-action capture",
+    "advanced enabled checkbox and gain-controls capture"
+  ],
+  "receipts": {
+    "weather_panel": {
+      "screenshot": "weather-panel-preview.png",
+      "bytes": 904894
+    },
+    "advanced_legacy": {
+      "twilight_controls_absent": true
+    },
+    "advanced_legacy_panel": {
+      "screenshot": "advanced-legacy-panel-preview.png",
+      "bytes": 868740
+    },
+    "advanced_enabled": {
+      "twilight_enabled": true,
+      "twilight_sky_gain": 3.0,
+      "twilight_moon_gain": 0.15
+    },
+    "advanced_enabled_panel": {
+      "screenshot": "advanced-enabled-panel-preview.png",
+      "bytes": 879952
+    }
+  }
+}
